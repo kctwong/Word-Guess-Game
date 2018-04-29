@@ -1,52 +1,56 @@
 
+
     var masterWordList = // Word list
         [
         "apple",   
         "strawberry",
         "orange",
+        "ice-cream",
+        "pancake",
     ];
-
 
 // Hangman game object
 var hangman = {
-    wordlist: masterWordList,       //  Holds the word list, this can be any array of strings
-
-  
+    wordlist: masterWordList,       //  Holds the word list, this can be any array of string
     guessingword: [],
-    guessedletter: [],
+    guessedletter: [],  // is the word to be guessed
     currentword: "",
     lastwordIdx: -1,
     counter: 0,
     livesleft: 0,
     win: 0,
     remaining: 0,
-    gamestarted: false,
-    hasfinished: false,
+    // gamestarted: false,
+    hasfinished: true,
     
 
     resetgame: function () {
+
+    // wordlist is returns an array of word. Randomly generates position of the array to return a word 
         var idx = -1;
-        console.log(this);
-        do {
-            idx = Math.floor(Math.random()*this.wordlist.length);
-        } while (idx === this.lastwordIdx)
-
+            do {
+                idx = Math.floor(Math.random()*this.wordlist.length);
+            } while (idx === this.lastwordIdx)
+        
         this.currentword = this.wordlist[idx];
-
-        this.lastwordIdx = idx;
-
-        this.lastwordIdx = idx;
-
+    // zero out working arrays. guessingword builds working arrays
+    // guessedletters holds all letters guessed
         this.guessingword = [];
         this.guessedletter = [];
-
-        this.livesleft = 10
-
+    
+    // reset remaining attempts
+        this.livesleft = 10;
+    // have not finished the game
         this.hasfinished = false;
 
+
+    //initialize the word for guessing by populating number of _ equal to the number of characters in the random word
+    //if the word has a hyphen, generates a hyphen in the index 
         for (var i=0; i< this.currentword.length; i++){
             if (this.currentword[i] === "-"){
                 this.guessingword.push("-");
+            } else if (this.currentword[i] === " "){
+                this.guessingword.push("space");
             } else {
                 this.guessingword.push("_");
             }
@@ -56,12 +60,15 @@ var hangman = {
     
     },
 
+    // update the total wins
+    // update the HTML display area
+
     updatedisplay: function() {
         document.getElementById("totalwins").innerText = this.win;
         var tempword = ""
         for (var i=0; i< this.guessingword.length; i++){
             if (this.guessingword[i] === "space"){
-                tempword += "&nbsp;"
+                tempword += "&nbsp;";
             } else{
                 tempword += this.guessingword[i];
             }
@@ -72,7 +79,7 @@ var hangman = {
 
     },
 
-    
+    // for letter already guessed, keep track of it under guessedletter, only one copy 
     makeaguess: function (letter){
         if (this.livesleft > 0){
             if (this.guessedletter.indexOf(letter) === -1){
@@ -92,14 +99,13 @@ var hangman = {
             }
         }
 
-        if (positions.length <=0){
+        if (positions.length <= 0){
             this.livesleft--;
         } else{
             for (var i=0; i<positions.length; i++){
                 this.guessingword[positions[i]] = letter;
             }
         }
-
     },
 
 
@@ -116,19 +122,25 @@ var hangman = {
         },
     };
 
-        document.onkeyup = function(event){
+    // function isLetter(keyCode) {
+    //     return (keyCode >= 65 && keyCode <= 90);
+    // };
+
+
+        document.onkeydown = function(event){
         var keypress = String.fromCharCode(event.keyCode).toLowerCase();
         console.log(keypress);
             if (hangman.hasfinished){
                 hangman.resetgame();
                 hangman.hasfinished = false;
-            } else{
+            } else {
+                // if (isLetter(event.keyCode)){
                 if(event.keyCode >= 65 && event.keyCode <=90){
+                    // hangman.makeaguess(event.key.toLowerCase());
                     hangman.makeaguess(keypress);
-                // } else {
-                //     hangman.wrongKey.play();
                 }
             }
+        
         };
 
 
@@ -136,5 +148,8 @@ var hangman = {
 
 
 
+
+
+  
 
 
